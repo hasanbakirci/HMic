@@ -1,0 +1,46 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+*/.DS_Store
+
+# Build artifacts
+.build/
+*.app
+*.dmg
+*.zip
+dmg_temp/
+*.hmap
+*.ipa
+DerivedData/
+
+# Swift Package Manager
+.swiftpm/
+Packages/
+Package.resolved
+*.xcodeproj
+
+# Xcode
+xcuserdata/
+*.xcuserstate
+*.xcworkspace
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.xccheckout
+*.moved-aside
+*.hmap
+
+# Generated Assets
+Assets/AppIcon.icns
+
+# Temporary files
+*~
+*.swp
+*.bak
+*.tmp
+
+# IDE
+.vscode/
+.idea/
