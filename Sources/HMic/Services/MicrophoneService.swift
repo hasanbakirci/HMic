@@ -9,13 +9,28 @@ class MicrophoneService: ObservableObject {
     @Published var currentInputGain: Float = 0.0
     @Published var isMuted: Bool = false
     @Published var deviceName: String = "Unknown Mic"
+    @Published var currentAudioLevel: Float = 0.0  // Real-time audio level (0.0-1.0)
     
     private let audioService = AudioDeviceService.shared
+    let audioLevelMonitor = AudioLevelMonitor()  // Exposed for UI binding
     private var currentDeviceID: AudioObjectID?
     private var deviceMonitor: AudioDeviceMonitor?
+    private var cancellables = Set<AnyCancellable>()
     
     private init() {
         setupMonitoring()
+        setupLevelMonitoring()
+    }
+    
+    private func setupLevelMonitoring() {
+        // Bind audio level monitor to published property
+        audioLevelMonitor.$currentLevel
+            .receive(on: RunLoop.main)
+            .assign(to: \.currentAudioLevel, on: self)
+            .store(in: &cancellables)
+        
+        // Start monitoring
+        audioLevelMonitor.start()
     }
     
     func setupMonitoring() {

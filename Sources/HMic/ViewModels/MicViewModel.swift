@@ -10,6 +10,7 @@ class MicViewModel: ObservableObject {
     @Published var shortcuts: [ShortcutAction: SavedShortcut] = [:]
     @Published var errorMessage: String?
     @Published var showingShortcuts: Bool = false
+    @Published var currentAudioLevel: Float = 0.0  // Real-time audio level
     
     var isDragging: Bool = false
     
@@ -39,6 +40,11 @@ class MicViewModel: ObservableObject {
         micService.$deviceName
             .receive(on: RunLoop.main)
             .assign(to: \.deviceName, on: self)
+            .store(in: &cancellables)
+            
+        micService.$currentAudioLevel
+            .receive(on: RunLoop.main)
+            .assign(to: \.currentAudioLevel, on: self)
             .store(in: &cancellables)
             
         shortcutService.$shortcuts

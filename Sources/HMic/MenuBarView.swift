@@ -92,14 +92,19 @@ struct MenuBarView: View {
                 }
             }
             
-            // Visual Level Indicator
+            // Dual Visual Level Indicator
             GeometryReader { geo in
                 ZStack(alignment: .leading) {
-                    // Background
+                    // Background - full gray
                     Capsule()
                         .fill(.quaternary)
                     
-                    // Level bar
+                    // Gain setting bar (static, translucent)
+                    Capsule()
+                        .fill(.blue.opacity(0.3))
+                        .frame(width: geo.size.width * CGFloat(viewModel.inputGain))
+                    
+                    // Real-time audio level bar (animated, vibrant)
                     Capsule()
                         .fill(
                             LinearGradient(
@@ -108,10 +113,25 @@ struct MenuBarView: View {
                                 endPoint: .trailing
                             )
                         )
-                        .frame(width: geo.size.width * CGFloat(viewModel.inputGain))
+                        .frame(width: geo.size.width * CGFloat(viewModel.currentAudioLevel))
+                        .animation(.linear(duration: 0.05), value: viewModel.currentAudioLevel)
                 }
             }
-            .frame(height: 6)
+            .frame(height: 8)
+            
+            // Audio Level Indicator Text
+            HStack {
+                Image(systemName: "waveform")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Text("Live:")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                Text("\(Int(viewModel.currentAudioLevel * 100))%")
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundStyle(viewModel.currentAudioLevel > 0.7 ? .orange : .green)
+                Spacer()
+            }
             
             // Slider
             Slider(
