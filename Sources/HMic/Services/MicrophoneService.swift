@@ -29,8 +29,7 @@ class MicrophoneService: ObservableObject {
             .assign(to: \.currentAudioLevel, on: self)
             .store(in: &cancellables)
         
-        // Start monitoring
-        audioLevelMonitor.start()
+        // Note: start() is called manually from UI when needed
     }
     
     func setupMonitoring() {

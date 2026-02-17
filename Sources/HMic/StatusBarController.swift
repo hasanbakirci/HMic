@@ -2,14 +2,16 @@ import Cocoa
 import SwiftUI
 import Combine
 
-class StatusBarController {
+class StatusBarController: NSObject, NSPopoverDelegate {
     private var statusItem: NSStatusItem
     private var popover: NSPopover
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    override init() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
         popover = NSPopover()
+        
+        super.init()
         
         setupPopover()
         setupStatusItem()
@@ -20,6 +22,7 @@ class StatusBarController {
         popover.contentSize = NSSize(width: 280, height: 350)
         popover.behavior = .transient
         popover.contentViewController = NSHostingController(rootView: MenuBarView())
+        popover.delegate = self
     }
     
     private func setupStatusItem() {
@@ -54,7 +57,16 @@ class StatusBarController {
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
                 // Activate app to ensure it gets focus for shortcut recording
                 NSApp.activate(ignoringOtherApps: true)
+                // Start audio monitoring when opening
+                MicrophoneService.shared.audioLevelMonitor.start()
             }
         }
+    }
+    
+    // MARK: - NSPopoverDelegate
+    
+    func popoverWillClose(_ notification: Notification) {
+        // Stop audio monitoring when popover closes (by any means: click outside, ESC, etc.)
+        MicrophoneService.shared.audioLevelMonitor.stop()
     }
 }
